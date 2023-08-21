@@ -1,0 +1,37 @@
+package AdvProgram;
+
+import java.util.*;
+import java.sql.*;
+public class Pooling {
+	
+		public String url,uName,pWord;
+		public Pooling(String url,String uName,String pWord) {
+			this.url   = url;
+			this.uName = uName;
+			this.pWord = pWord;
+		}
+		public Vector<Connection> v = new Vector<Connection>();
+		public void createConnections()
+		{
+			try {
+				while(v.size()<5) {
+					System.out.println("Pool is not full...");
+					Connection con = DriverManager.getConnection(url,uName,pWord);
+					v.add(con);//Adding Connection to Vector
+					System.out.println("Pool is full...");
+				}
+			}catch(Exception e) {e.printStackTrace();}
+		}//end of method
+		public synchronized Connection useConnection()
+		{
+			Connection con = v.firstElement();
+			v.removeElementAt(0);
+			return con;
+		}//end of metod
+		public synchronized void returnConnection(Connection con) {
+			v.addElement(con);//Adding Connection to pool
+			System.out.println("Connection added back to pool...");
+		}
+	}
+
+
